@@ -259,8 +259,12 @@ def instrucciones():
     nueva_ventana = tk.Toplevel(root)
     nueva_ventana.title("Instrucciones")
     nueva_ventana.configure(bg="black")
-    instrucciones = ("1. Usa el puntero del mouse para apuntar.\n2. Dispara con click derecho."
-                     "\n3. Evita que las demas figuras te destruyan!!")
+    instrucciones = ("1. Usa el puntero del mouse para apuntar, cuadrado pequeño requiere 4 impactos, cuadrado grande 8 para destruirse.\n2. Dispara con click derecho.\n3. "
+                     "Los Cuadrados grandes te hacen 5 veces mas daño que los pequeños los cuales te quitan 1 punto de vida, concentra el fuego"
+                     " en ellos.\n4. Los Cuadrados pequeños se acumulan demasiado, no los descuides o seran demasiados."
+                     "\n5. Tus disparos viajan tan rapido como des click con el mouse, se rapido.\n5. Tienes un 50% de"
+                     " probabilidad de que tu disparo haga 4 veces mas daño que uno normal, no dejes de presionar el mouse."
+                     "\n6. !!Evita que las demas figuras te destruyan!!")
     label = tk.Label(nueva_ventana, text=instrucciones, font=("Arial", 12), justify="left",bg="black", fg="white")
     label.pack(padx=20, pady=20)
 
