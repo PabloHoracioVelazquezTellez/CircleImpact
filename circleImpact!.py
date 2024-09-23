@@ -25,7 +25,7 @@ def iniciar_juego():
     nueva_ventana.attributes('-fullscreen', True)
     nueva_ventana.bind("<Escape>", lambda event: nueva_ventana.attributes('-fullscreen', False))
 
-    label = tk.Label(nueva_ventana, text=f"¡Juego en pantalla completa! Nivel {level} :D", font=("Arial", 24))
+    label = tk.Label(nueva_ventana, text=f"Nivel {level} :D", font=("Arial", 24))
     label.pack(pady=20)
 
     canvas = tk.Canvas(nueva_ventana, width=900, height=800, bg="black", highlightthickness=0)
@@ -43,7 +43,7 @@ def iniciar_juego():
     puntuacion_label.place(relx=0.9, rely=0.05, anchor='ne')
 
     def generar_cuadrados():
-        num_cuadrados = 5 + (level - 1) * 5 if level < 10 else 60
+        num_cuadrados = 5 + (level - 1) * 10 if level < 10 else 60
         for _ in range(num_cuadrados):
             edge = random.choice(['top', 'bottom', 'left', 'right'])
             if edge == 'top':
@@ -59,7 +59,7 @@ def iniciar_juego():
                 x = 880
                 y = random.randint(0, 600)
 
-            size_multiplier = 2 if random.random() < 0.09 else 1
+            size_multiplier = 2 if random.random() < 0.12 else 1
             entity_size = 20 * size_multiplier
             entity = canvas.create_rectangle(x, y, x + entity_size, y + entity_size, outline="white", fill="black")
             entities.append((entity, 'cuadrado', 1, size_multiplier))  # Velocidad fija de 1
@@ -70,7 +70,7 @@ def iniciar_juego():
         nivel_completado_mostrado = False  # Resetea la variable
         generar_cuadrados()
         move_entities()
-        label.config(text=f"¡Juego en pantalla completa! Nivel {level} :D")
+        label.config(text=f"Nivel {level} :D")
 
     def move_entities():
         global vida
@@ -230,6 +230,8 @@ def iniciar_juego():
         global felicidades_mostrada
         if not felicidades_mostrada:  # Verifica si ya se mostró
             felicidades_mostrada = True  # Cambia a True
+            nivel_puntuaciones[level] = puntuacion #MALDITA LINEA DE PORQUERIA ME TOMO 8 HORAS SABER PQ NO SE
+            # MOSTRABAN LOS PUNTOS DEL NIVEL 10 Y ERA PQ NO ESTAA ESTA LINEA AQUIIIIIIIIIII
             felicidades_window = tk.Toplevel(nueva_ventana)
             felicidades_window.title("¡Felicidades!")
             felicidades_label = tk.Label(felicidades_window, text="¡Has completado todos los niveles!",
@@ -242,7 +244,7 @@ def iniciar_juego():
 
     def check_next_level():
         if len(entities) == 0 and not nivel_completado_mostrado:
-            if level >= 10:
+            if level == 10:
                 mostrar_felicidades()  # Llama a la función de felicitaciones
                 return  # Detiene el flujo
             else:
