@@ -3,11 +3,9 @@ from tkinter import messagebox
 import random
 import math
 game_over_shown = False  # Variable de control para mostrar Game Over
-nivel_puntuaciones = {i: "???" for i in range(1, 12)}
-nivel_window_abierta = False
-felicidades_mostrada = False  # Inicializa como False al inicio
-nivel_window = None
+nivel_puntuaciones = {i: "???" for i in range(1, 11)}
 
+felicidades_mostrada = False  # Inicializa como False al inicio
 
 def iniciar_juego():
     global canvas, bullets, impact_count, puntuacion, puntuacion_label, vida, level, entities
@@ -38,14 +36,14 @@ def iniciar_juego():
     circle_radius = 20
     canvas.create_oval(circle_x - circle_radius, circle_y - circle_radius,
                        circle_x + circle_radius, circle_y + circle_radius,
-                       fill="black", outline="#78288C")
+                       fill="black", outline="white")
     vida_text = canvas.create_text(circle_x, circle_y, text=str(vida), fill="white", font=("Arial", 14))
 
     puntuacion_label = tk.Label(nueva_ventana, text=f"Puntuación: {puntuacion}", font=("Arial", 14), bg="black", fg="white")
     puntuacion_label.place(relx=0.9, rely=0.05, anchor='ne')
 
     def generar_cuadrados():
-        num_cuadrados = 5 + (level - 1) * 1 if level < 10 else 60
+        num_cuadrados = 5 + (level - 1) * 5 if level < 10 else 60
         for _ in range(num_cuadrados):
             edge = random.choice(['top', 'bottom', 'left', 'right'])
             if edge == 'top':
@@ -63,7 +61,7 @@ def iniciar_juego():
 
             size_multiplier = 2 if random.random() < 0.09 else 1
             entity_size = 20 * size_multiplier
-            entity = canvas.create_rectangle(x, y, x + entity_size, y + entity_size, outline="#CCFF00", fill="black")
+            entity = canvas.create_rectangle(x, y, x + entity_size, y + entity_size, outline="white", fill="black")
             entities.append((entity, 'cuadrado', 1, size_multiplier))  # Velocidad fija de 1
             impact_count[entity] = 0
 
@@ -203,74 +201,30 @@ def iniciar_juego():
     game_over_shown = False
 
     def nivel_completado():
-        global puntuacion, level, nivel_window, nivel_window_abierta
+        global nivel_completado_mostrado, puntuacion  # Asegúrate de incluir puntuacion
+        if not nivel_completado_mostrado:
+            nivel_completado_mostrado = True
+            nivel_puntuaciones[level] = puntuacion  # Guardar la puntuación del nivel completado
+            puntuacion = 0  # Reinicia la puntuación para el siguiente nivel
+            nivel_window = tk.Toplevel(nueva_ventana)
+            nivel_window.title("¡Nivel Completo!")
+            nivel_label = tk.Label(nivel_window, text=f"¡Nivel {level} completado!", font=("Arial", 24), fg="green",
+                                   bg="black")
+            nivel_label.pack(pady=20)
+            def continuar():
+                nivel_window.destroy()
+                global level
+                level += 1
+                iniciar_nivel()
 
-        # Verifica si ya hay una ventana abierta y la cierra si es necesario
-        if nivel_window_abierta:
-            return  # Si la ventana ya está abierta, no hace nada
+            def salir():
+                nivel_window.destroy()
+                nueva_ventana.destroy()
 
-        # Marcar que la ventana de nivel está abierta
-        nivel_window_abierta = True
-
-        # Crear la ventana para mostrar el avance al siguiente nivel
-        nivel_window = tk.Toplevel(root)
-        nivel_window.title(f"Nivel {level} Completado")
-
-        # Guardar la puntuación del nivel completado
-        if level <= 10:
-            nivel_puntuaciones[level] = puntuacion  # Guardar la puntuación
-
-        # Crear elementos de la ventana
-        label_nivel = tk.Label(nivel_window, text=f"Has completado el nivel {level}", font=("Arial", 16))
-        label_nivel.pack(pady=20)
-
-        # Botón para continuar al siguiente nivel o mostrar felicitaciones si es el nivel 10
-        if level < 10:
-            btn_continuar = tk.Button(nivel_window, text="Continuar", font=("Arial", 14),
-                                      command=lambda: [cerrar_nivel_window(), iniciar_nivel()])
-        else:
-            btn_continuar = tk.Button(nivel_window, text="Finalizar Juego", font=("Arial", 14),
-                                      command=lambda: [cerrar_nivel_window(), mostrar_felicidades()])
-
-        btn_continuar.pack(pady=10)
-
-        # Botón para salir del juego
-        btn_salir = tk.Button(nivel_window, text="Salir", font=("Arial", 14), command=root.quit)
-        btn_salir.pack(pady=10)
-
-        # Reiniciar la puntuación y avanzar de nivel si no es el nivel 10
-        if level < 10:
-            puntuacion = 0  # Reiniciar la puntuación
-        else:
-            mostrar_felicidades()  # Mostrar felicitaciones al finalizar el nivel 10
-
-    def cerrar_nivel_window():
-        global nivel_window, nivel_window_abierta
-        if nivel_window is not None:
-            nivel_window.destroy()  # Cerrar la ventana de nivel
-            nivel_window = None  # Reiniciar la variable para indicar que la ventana está cerrada
-        nivel_window_abierta = False  # Marcar que la ventana de nivel ya está cerrada
-
-    def cerrar_nivel_window():
-        global nivel_window
-        if nivel_window is not None:
-            nivel_window.destroy()  # Cerrar la ventana de nivel
-            nivel_window = None  # Reiniciar la variable para indicar que la ventana está cerrada
-        # Función para cerrar la ventana y marcar que ya no está abierta
-        def cerrar_ventana():
-            global nivel_window_abierta
-            nivel_window_abierta = False
-            nivel_window.destroy()
-
-        # Asociar el evento de cierre de ventana a la función que lo controla
-        nivel_window.protocol("WM_DELETE_WINDOW", cerrar_ventana)
-
-        # Reiniciar la puntuación y avanzar de nivel si no es el nivel 10
-        if level < 10:
-            level += 1
-            puntuacion = 0  # Reiniciar la puntuación
-        else:
-            mostrar_felicidades()  # Mostrar feli
+            btn_continuar = tk.Button(nivel_window, text="Continuar", font=("Arial", 14), command=continuar)
+            btn_continuar.pack(pady=10)
+            btn_salir = tk.Button(nivel_window, text="Salir", font=("Arial", 14), command=salir)
+            btn_salir.pack(pady=10)
 
     def mostrar_felicidades():
         global felicidades_mostrada
@@ -308,15 +262,13 @@ def instrucciones():
     label = tk.Label(nueva_ventana, text=instrucciones, font=("Arial", 12), justify="left",bg="black", fg="white")
     label.pack(padx=20, pady=20)
 
-
 def puntajes():
-    puntajes_texto = "\n".join([f"Nivel {i + 1}: {nivel_puntuaciones.get(i + 1, '???')}" for i in range(10)])
-    puntajes_window = tk.Toplevel(root)
-    puntajes_window.title("Puntajes")
-    label_puntajes = tk.Label(puntajes_window, text=puntajes_texto, font=("Arial", 14))
-    label_puntajes.pack(pady=20)
-
-
+    nueva_ventana = tk.Toplevel(root)
+    nueva_ventana.title("Puntajes por Nivel")
+    nueva_ventana.configure(bg="black")
+    puntajes_text = "\n".join([f"Nivel {i}: {nivel_puntuaciones[i]}" for i in range(1, 11)])
+    label = tk.Label(nueva_ventana, text=puntajes_text, font=("Arial", 12), bg="black", fg="white")
+    label.pack(padx=20, pady=20)
 
 def salir():
     respuesta = messagebox.askquestion("Salir", "¿Estás seguro de que deseas salir?")
@@ -344,3 +296,4 @@ btn_salir.pack(pady=10)
 
 # Iniciar el bucle principal de la interfaz
 root.mainloop()
+
