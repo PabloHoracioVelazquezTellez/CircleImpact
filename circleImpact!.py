@@ -4,12 +4,11 @@ import random
 import math
 game_over_shown = False  # Variable de control para mostrar Game Over
 nivel_puntuaciones = {i: "???" for i in range(1, 11)}
-
 felicidades_mostrada = False  # Inicializa como False al inicio
 
 def iniciar_juego():
     global canvas, bullets, impact_count, puntuacion, puntuacion_label, vida, level, entities
-    global nivel_completado_mostrado, nivel_puntuaciones  # Asegúrate de que se incluya el diccionario
+    global nivel_completado_mostrado, nivel_puntuaciones
 
     vida = 100
     puntuacion = 0
@@ -62,7 +61,7 @@ def iniciar_juego():
             size_multiplier = 2 if random.random() < 0.12 else 1
             entity_size = 20 * size_multiplier
             entity = canvas.create_rectangle(x, y, x + entity_size, y + entity_size, outline="white", fill="black")
-            entities.append((entity, 'cuadrado', 1, size_multiplier))  # Velocidad fija de 1
+            entities.append((entity, 'cuadrado', 1, size_multiplier))
             impact_count[entity] = 0
 
     def iniciar_nivel():
@@ -283,9 +282,9 @@ def salir():
 
 # Ventana principal
 root = tk.Tk()
-root.title("Ventana de Inicio del Juego")
+root.title("CircleImpact!")
 root.geometry("500x200")
-root.configure(bg="black")  # Cambiar el fondo a negro
+root.configure(bg="black")
 
 # Creación de botones
 btn_inicio = tk.Button(root, text="Iniciar Juego", font=("Arial", 12), bg="black", fg="white", command=iniciar_juego)
